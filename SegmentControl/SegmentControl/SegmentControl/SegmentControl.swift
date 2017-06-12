@@ -13,20 +13,24 @@ class SegmentControl: UIControl {
     fileprivate class ItemView: UIView {
         
         var iconImageView: UIImageView = {
-            let iconImageView = UIImageView.newAutoLayout()
+            let iconImageView = UIImageView()
+            iconImageView.translatesAutoresizingMaskIntoConstraints = false
             return iconImageView
         }()
         
         var countLabel: UILabel = {
-            let countLabel = UILabel.newAutoLayout()
+            let countLabel = UILabel()
             countLabel.textColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+            countLabel.text = "13"
             countLabel.textAlignment = .left
             countLabel.font = UIFont.systemFont(ofSize: 13, weight: 0.1)
+            countLabel.translatesAutoresizingMaskIntoConstraints = false
             return countLabel
         }()
         
         fileprivate var centerLayoutGuide: UIView = {
-            let centerView = UIView.newAutoLayout()
+            let centerView = UIView()
+            centerView.translatesAutoresizingMaskIntoConstraints = false
             return centerView
         }()
         
@@ -47,14 +51,17 @@ class SegmentControl: UIControl {
             addSubview(iconImageView)
             addSubview(centerLayoutGuide)
             
-            centerLayoutGuide.autoCenterInSuperview()
-            centerLayoutGuide.autoSetDimensions(to: suitableValueInPointsOfValueInPixels(CGSize(width: 1, height: 1)))
+            let margins = layoutMarginsGuide
+            centerLayoutGuide.centerXAnchor.constraint(equalTo: margins.centerXAnchor).isActive = true
+            centerLayoutGuide.centerYAnchor.constraint(equalTo: margins.centerYAnchor).isActive = true
+            centerLayoutGuide.widthAnchor.constraint(equalToConstant: 1).isActive = true
+            centerLayoutGuide.heightAnchor.constraint(equalToConstant: 1).isActive = true
             
-            countLabel.autoAlignAxis(toSuperviewAxis: .horizontal)
-            countLabel.autoPinEdge(.left, to: .right, of: centerLayoutGuide, withOffset: suitableValueInPointsOfValueInPixels(7))
+            countLabel.centerXAnchor.constraint(equalTo: margins.centerXAnchor).isActive = true
+            countLabel.leftAnchor.constraint(equalTo: centerLayoutGuide.layoutMarginsGuide.rightAnchor, constant: 3.5).isActive = true
             
-            iconImageView.autoAlignAxis(toSuperviewAxis: .horizontal)
-            iconImageView.autoPinEdge(.right, to: .left, of: centerLayoutGuide, withOffset: suitableValueInPointsOfValueInPixels(7))
+            iconImageView.centerXAnchor.constraint(equalTo: margins.centerXAnchor).isActive = true
+            iconImageView.rightAnchor.constraint(equalTo: centerLayoutGuide.layoutMarginsGuide.leftAnchor, constant: 3.5).isActive = true
         }
         
     }
@@ -86,30 +93,43 @@ class SegmentControl: UIControl {
         addGestureRecognizer(tapGesture)
         
         let itemWidth = screenWidth / CGFloat(items.count)
-        let itemHeight = suitableValueInPointsOfValueInPixels(76)
-        let indicatorWidth = suitableValueInPointsOfValueInPixels(250)
-        let indicatorHeight = suitableValueInPointsOfValueInPixels(2)
-        
+        let itemHeight: CGFloat = 38.0
+        let indicatorWidth: CGFloat = 125.0
+        let indicatorHeight: CGFloat = 1.0
+       
+        let margins = layoutMarginsGuide
+
         for (index, iconImage) in items.enumerated() {
-            let itemView = ItemView.newAutoLayout()
-            let containerView = UIView.newAutoLayout()
+            let itemView = ItemView()
+            itemView.translatesAutoresizingMaskIntoConstraints = false
+            let containerView = UIView()
+            containerView.translatesAutoresizingMaskIntoConstraints = false
             containerView.alpha = 0.2
             itemView.iconImageView.image = iconImage
             addSubview(containerView)
-            containerView.autoPinEdge(toSuperviewEdge: .top)
-            containerView.autoPinEdge(.left, to: .left, of: self, withOffset: CGFloat(index) * itemWidth)
-            containerView.autoSetDimensions(to: CGSize(width: itemWidth, height: itemHeight))
+            containerView.topAnchor.constraint(equalTo: margins.topAnchor).isActive = true
+            containerView.leftAnchor.constraint(equalTo: margins.leftAnchor, constant: CGFloat(index) * itemWidth).isActive = true
+            containerView.widthAnchor.constraint(equalToConstant: itemWidth).isActive = true
+            containerView.heightAnchor.constraint(equalToConstant: itemHeight).isActive = true
             containerView.addSubview(itemView)
-            itemView.autoPinEdgesToSuperviewEdges()
+         
+            let containerMargins = containerView.layoutMarginsGuide
+            itemView.topAnchor.constraint(equalTo: containerMargins.topAnchor).isActive = true
+            itemView.leftAnchor.constraint(equalTo: containerMargins.leftAnchor).isActive = true
+            itemView.bottomAnchor.constraint(equalTo: containerMargins.bottomAnchor).isActive = true
+            itemView.rightAnchor.constraint(equalTo: containerMargins.rightAnchor).isActive = true
             containers.append(containerView)
         }
         containers[index].alpha = 1
-        indicatorView = UIView.newAutoLayout()
+        indicatorView = UIView()
+        indicatorView.translatesAutoresizingMaskIntoConstraints = false
         indicatorView.backgroundColor = #colorLiteral(red: 0.968627451, green: 0.5019607843, blue: 0.08235294118, alpha: 1)
         addSubview(indicatorView)
-        indicatorView.autoPinEdge(toSuperviewEdge: .bottom)
-        indicatorView.autoSetDimensions(to: CGSize(width: indicatorWidth, height: indicatorHeight))
-        indicatorAlignAxisConstraint = indicatorView.autoAlignAxis(.vertical, toSameAxisOf: containers.first!)
+        indicatorView.bottomAnchor.constraint(equalTo:margins.bottomAnchor).isActive = true
+        indicatorView.widthAnchor.constraint(equalToConstant: indicatorWidth).isActive = true
+        indicatorView.heightAnchor.constraint(equalToConstant: indicatorHeight).isActive = true
+        indicatorAlignAxisConstraint = indicatorView.centerYAnchor.constraint(equalTo: (containers.first?.layoutMarginsGuide.centerYAnchor)!)
+        indicatorAlignAxisConstraint.isActive = true
     }
     
     
